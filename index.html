@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Visitas</title>
+    <title>Fuck quevedo</title>
     <style>
         body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; text-align: center; }
@@ -16,7 +16,7 @@
 <body>
 
 <div class="card">
-    <h2>¡Hola! bienvenid@ al whatsapp de aliexpress en proceso</h2>
+    <h2>Hola, bienvenid@ a mi whatsapp de temu en desarrollo</h2>
     <form id="miFormulario">
         <input type="text" id="nombre" placeholder="Tu nombre" required>
         <textarea id="mensaje" placeholder="Tu mensaje..." rows="4" required></textarea>
@@ -32,36 +32,47 @@
         const nombre = document.getElementById('nombre').value;
         const mensaje = document.getElementById('mensaje').value;
         const fechaActual = new Date();
-        const fechaFormateada = fechaActual.toLocaleString('es-ES'); // Fecha y hora para Google Sheets
+        const fechaFormateada = fechaActual.toLocaleString('es-ES');
 
-        // TU URL DE SHEETDB:
         const urlAPI = 'https://sheetdb.io/api/v1/3o550jb1149vf'; 
 
-        fetch(urlAPI, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                data: [
-                    {
-                        'NOMBRE': nombre,
-                        'FECHA': fechaFormateada,
-                        'MENSAJE': mensaje
-                    }
-                ]
+        // 1. Primero obtenemos la ciudad mediante la IP del usuario
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(ubicacionData => {
+                const ciudad = ubicacionData.city ? `${ubicacionData.city} (${ubicacionData.country_name})` : 'Desconocida';
+
+                // 2. Después enviamos todos los datos (incluyendo la ciudad) a SheetDB
+                return fetch(urlAPI, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data: [
+                            {
+                                'NOMBRE': nombre,
+                                'FECHA': fechaFormateada,
+                                'MENSAJE': mensaje,
+                                'CIUDAD': ciudad
+                            }
+                        ]
+                    })
+                });
             })
-        }).then(response => {
-            if (response.ok) {
-                document.getElementById('miFormulario').reset();
-                
-                // Muestra el mensaje de éxito con el corazón
-                const mensajeExito = document.getElementById('mensaje-exito');
-                mensajeExito.style.display = 'block';
-            } else {
-                alert('Hubo un error al enviar los datos.');
-            }
-        });
+            .then(response => {
+                if (response && response.ok) {
+                    document.getElementById('miFormulario').reset();
+                    const mensajeExito = document.getElementById('mensaje-exito');
+                    mensajeExito.style.display = 'block';
+                } else {
+                    alert('Hubo un error al enviar los datos.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener la ubicación.');
+            });
     });
 </script>
 
