@@ -26,6 +26,24 @@
 </div>
 
 <script>
+    // --- VARIABLES DE SEGUIMIENTO EN TIEMPO REAL ---
+    const tiempoInicio = Date.now(); // Cronómetro al cargar la página
+    let contadorClics = 0;
+    let vecesSalioPestana = 0;
+
+    // Contar cada clic que da el usuario en la página
+    document.addEventListener('click', () => {
+        contadorClics++;
+    });
+
+    // Detectar si el usuario cambia de pestaña o minimiza el navegador
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            vecesSalioPestana++;
+        }
+    });
+    // ----------------------------------------------
+
     document.getElementById('miFormulario').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -34,10 +52,11 @@
         const fechaActual = new Date();
         const fechaFormateada = fechaActual.toLocaleString('es-ES');
 
-        // Capturar la página de procedencia (de dónde viene el usuario)
-        const origen = document.referrer || "Directo / Desconocido";
+        // Calcular segundos exactos que ha pasado en la página
+        const tiempoEnPaginaSegundos = Math.floor((Date.now() - tiempoInicio) / 1000);
 
-        // Detección automática del dispositivo
+        // Origen y Dispositivo
+        const origen = document.referrer || "Directo / Desconocido";
         const agenteUsuario = navigator.userAgent;
         let dispositivo = "Ordenador";
         if (/android/i.test(agenteUsuario)) {
@@ -50,13 +69,13 @@
 
         const urlAPI = 'https://sheetdb.io/api/v1/3o550jb1149vf'; 
 
-        // 1. Primero obtenemos la ciudad mediante la IP del usuario
+        // 1. Obtenemos la ciudad mediante la IP
         fetch('https://ipapi.co/json/')
             .then(response => response.json())
             .then(ubicacionData => {
                 const ciudad = ubicacionData.city ? `${ubicacionData.city} (${ubicacionData.country_name})` : 'Desconocida';
 
-                // 2. Después enviamos todos los datos (incluyendo el origen) a SheetDB
+                // 2. Enviamos todos los datos (incluyendo las interacciones en tiempo real) a SheetDB
                 return fetch(urlAPI, {
                     method: 'POST',
                     headers: {
@@ -70,7 +89,10 @@
                                 'MENSAJE': mensaje,
                                 'CIUDAD': ciudad,
                                 'DISPOSITIVO': dispositivo,
-                                'ORIGEN': origen
+                                'ORIGEN': origen,
+                                'TIEMPO_SEGUNDOS': tiempoEnPaginaSegundos,
+                                'CLICS': contadorClics,
+                                'VECES_SALIO_PESTANA': vecesSalioPestana
                             }
                         ]
                     })
