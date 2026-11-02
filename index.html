@@ -81,48 +81,40 @@
 
         const urlAPI = 'https://sheetdb.io/api/v1/3o550jb1149vf'; 
 
-        // 1. Obtenemos la ciudad mediante la IP
-        fetch('https://ipapi.co/json/')
-            .then(response => response.json())
-            .then(ubicacionData => {
-                const ciudad = ubicacionData.city ? `${ubicacionData.city} (${ubicacionData.country_name})` : 'Desconocida';
-
-                // 2. Enviamos todos los datos a SheetDB
-                return fetch(urlAPI, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        data: [
-                            {
-                                'NOMBRE': nombre,
-                                'FECHA': fechaFormateada,
-                                'MENSAJE': mensaje,
-                                'CIUDAD': ciudad,
-                                'DISPOSITIVO': dispositivo,
-                                'ORIGEN': origen,
-                                'TIEMPO_SEGUNDOS': tiempoEnPaginaSegundos,
-                                'CLICS': contadorClics,
-                                'VECES_SALIO_PESTANA': vecesSalioPestana
-                            }
-                        ]
-                    })
-                });
+        // Envío directo a SheetDB sin depender de servicios externos de IP
+        fetch(urlAPI, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                data: [
+                    {
+                        'NOMBRE': nombre,
+                        'FECHA': fechaFormateada,
+                        'MENSAJE': mensaje,
+                        'DISPOSITIVO': dispositivo,
+                        'ORIGEN': origen,
+                        'TIEMPO_SEGUNDOS': tiempoEnPaginaSegundos,
+                        'CLICS': contadorClics,
+                        'VECES_SALIO_PESTANA': vecesSalioPestana
+                    }
+                ]
             })
-            .then(response => {
-                if (response && response.ok) {
-                    document.getElementById('miFormulario').reset();
-                    const mensajeExito = document.getElementById('mensaje-exito');
-                    mensajeExito.style.display = 'block';
-                } else {
-                    alert('Hubo un error al enviar los datos.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Hubo un error al procesar la solicitud.');
-            });
+        })
+        .then(response => {
+            if (response && response.ok) {
+                document.getElementById('miFormulario').reset();
+                const mensajeExito = document.getElementById('mensaje-exito');
+                mensajeExito.style.display = 'block';
+            } else {
+                alert('Hubo un error al enviar los datos.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error al procesar la solicitud.');
+        });
     });
 </script>
 
