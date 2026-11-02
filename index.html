@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-        input, textarea, button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
+        input, button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box; }
         button { background-color: #28a745; color: white; border: none; font-weight: bold; cursor: pointer; }
         button:hover { background-color: #218838; }
         #mensaje-exito { color: green; margin-top: 15px; display: none; }
@@ -16,13 +16,12 @@
 <body>
 
 <div class="card">
-    <h2>¡Hola! Déjame tu mensaje</h2>
+    <h2>¡Hola! ¿Cómo te llamas?</h2>
     <form id="miFormulario">
         <input type="text" id="nombre" placeholder="Tu nombre" required>
-        <textarea id="mensaje" placeholder="Tu mensaje..." rows="4" required></textarea>
-        <button type="submit">Enviar</button>
+        <button type="submit">Registrar visita</button>
     </form>
-    <p id="mensaje-exito">¡Gracias por registrarte!</p>
+    <p id="mensaje-exito">¡Gracias por tu visita!</p>
 </div>
 
 <script>
@@ -30,7 +29,6 @@
         e.preventDefault();
         
         const nombre = document.getElementById('nombre').value;
-        const mensaje = document.getElementById('mensaje').value;
         const fecha = new Date().toLocaleString('es-ES'); // Fecha y hora actual
 
         // TU URL DE SHEETDB:
@@ -45,8 +43,7 @@
                 data: [
                     {
                         'NOMBRE': nombre,
-                        'FECHA': fecha,
-                        'MENSAJE': mensaje
+                        'FECHA': fecha
                     }
                 ]
             })
@@ -55,7 +52,7 @@
                 document.getElementById('miFormulario').reset();
                 document.getElementById('mensaje-exito').style.display = 'block';
             } else {
-                alert('Hubo un error al enviar los datos.');
+                alert('Hubo un error al registrar la visita.');
             }
         });
     });
