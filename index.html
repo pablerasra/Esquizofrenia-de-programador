@@ -34,6 +34,17 @@
         const fechaActual = new Date();
         const fechaFormateada = fechaActual.toLocaleString('es-ES');
 
+        // Detección automática del dispositivo
+        const agenteUsuario = navigator.userAgent;
+        let dispositivo = "Ordenador";
+        if (/android/i.test(agenteUsuario)) {
+            dispositivo = "Móvil Android";
+        } else if (/iphone|ipad|ipod/i.test(agenteUsuario)) {
+            dispositivo = "Dispositivo iOS (Apple)";
+        } else if (/mobile/i.test(agenteUsuario)) {
+            dispositivo = "Móvil genérico";
+        }
+
         const urlAPI = 'https://sheetdb.io/api/v1/3o550jb1149vf'; 
 
         // 1. Primero obtenemos la ciudad mediante la IP del usuario
@@ -42,7 +53,7 @@
             .then(ubicacionData => {
                 const ciudad = ubicacionData.city ? `${ubicacionData.city} (${ubicacionData.country_name})` : 'Desconocida';
 
-                // 2. Después enviamos todos los datos (incluyendo la ciudad) a SheetDB
+                // 2. Después enviamos todos los datos (incluyendo la ciudad y el dispositivo) a SheetDB
                 return fetch(urlAPI, {
                     method: 'POST',
                     headers: {
@@ -54,7 +65,8 @@
                                 'NOMBRE': nombre,
                                 'FECHA': fechaFormateada,
                                 'MENSAJE': mensaje,
-                                'CIUDAD': ciudad
+                                'CIUDAD': ciudad,
+                                'DISPOSITIVO': dispositivo
                             }
                         ]
                     })
