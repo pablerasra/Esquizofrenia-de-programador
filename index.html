@@ -34,6 +34,9 @@
         const fechaActual = new Date();
         const fechaFormateada = fechaActual.toLocaleString('es-ES');
 
+        // Capturar la página de procedencia (de dónde viene el usuario)
+        const origen = document.referrer || "Directo / Desconocido";
+
         // Detección automática del dispositivo
         const agenteUsuario = navigator.userAgent;
         let dispositivo = "Ordenador";
@@ -53,7 +56,7 @@
             .then(ubicacionData => {
                 const ciudad = ubicacionData.city ? `${ubicacionData.city} (${ubicacionData.country_name})` : 'Desconocida';
 
-                // 2. Después enviamos todos los datos (incluyendo la ciudad y el dispositivo) a SheetDB
+                // 2. Después enviamos todos los datos (incluyendo el origen) a SheetDB
                 return fetch(urlAPI, {
                     method: 'POST',
                     headers: {
@@ -66,7 +69,8 @@
                                 'FECHA': fechaFormateada,
                                 'MENSAJE': mensaje,
                                 'CIUDAD': ciudad,
-                                'DISPOSITIVO': dispositivo
+                                'DISPOSITIVO': dispositivo,
+                                'ORIGEN': origen
                             }
                         ]
                     })
